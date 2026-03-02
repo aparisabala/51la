@@ -75,12 +75,8 @@ class ReportController extends Controller
                     'total_install'    => number_format($metric->total_install),
                     'total_click'      => number_format($metric->total_click),
                     'click_ratio'      => $metric->click_ratio ?? '-',
-
-                    // eta ekhn thak
                     'ip_click_ratio'   => $metric->ip_click_ratio ?? '-',
                     'conversion_rate'  => $metric->conversion_rate_display,
-
-                    // pore eta rakhbo
                     // 'ip_click_ratio' => $metric->interval_ip > 0 ? ($metric->interval_click / $metric->interval_ip) : 0,
                     // 'conversion_rate' => $metric->interval_ip > 0 ? ($metric->interval_install / $metric->interval_ip) : 0,
                 ] : [
@@ -98,12 +94,8 @@ class ReportController extends Controller
                     'total_install'   => number_format($metric->interval_install),
                     'total_click'     => number_format($metric->interval_click),
                     'click_ratio'     => $metric->interval_click_ratio ?? '-',
-
-                    // eta ekhon thak
                     'ip_click_ratio'  => $metric->interval_ip_click_ratio ?? '-',
                     'conversion_rate' => $metric->interval_conversion_rate_display,
-                    
-                    // pore eta rakhbo
                     // 'ip_click_ratio' => $metric->interval_ip > 0 ? ($metric->interval_click / $metric->interval_ip) : 0,
                     // 'conversion_rate' => $metric->interval_ip > 0 ? ($metric->interval_install / $metric->interval_ip) : 0,
                 ] : [
