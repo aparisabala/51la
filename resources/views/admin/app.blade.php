@@ -120,7 +120,22 @@
                     </li>
                 @endcan
 
+
+                {{-- main working area --}}
+                <li class="side-nav-item">
+                    <a href="{{route('apps.section')}}" class="side-nav-link">
+                        <i class="ri-dashboard-3-line"></i>
+                        <span> Apps </span>
+                    </a>
+                </li>
               
+                <li class="side-nav-item">
+                    <a href="{{route('report.index')}}" class="side-nav-link">
+                        <i class="ri-dashboard-3-line"></i>
+                        <span> App Metrics Report </span>
+                    </a>
+                </li>
+                {{-- main working area --}}
 
 
                 @can('role-and-permission-list')
