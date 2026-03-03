@@ -8,12 +8,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Exports\ReportExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Http;
 
 class ReportController extends Controller
 {
-    /**
-     * Show main report page
-     */
+
     public function index(Request $request)
     {
         $date = $request->get('date', Carbon::today()->toDateString());
@@ -23,14 +22,6 @@ class ReportController extends Controller
         return view('admin.pages.reports.index', compact('apps', 'date'));
     }
 
-    /**
-     * Return JSON data for DataTable (AJAX)
-     *
-     * Response format:
-     * Each time slot returns TWO rows:
-     *   1. white row  → cumulative data
-     *   2. orange row → interval (diff) data
-     */
     public function data(Request $request)
     {
         $date = $request->get('date', Carbon::today()->toDateString());
@@ -118,41 +109,6 @@ class ReportController extends Controller
         ]);
     }
 
-    /**
-     * Store/update a single metric entry
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'app_id'                    => 'required|exists:apps,id',
-            'report_date'               => 'required|date',
-            'time_slot'                 => 'required|string',
-            'ip_51la'                   => 'nullable|integer',
-            'total_install'             => 'nullable|integer',
-            'total_click'               => 'nullable|integer',
-            'click_ratio'               => 'nullable|numeric',
-            'ip_click_ratio'            => 'nullable|numeric',
-            'conversion_rate'           => 'nullable|numeric',
-            'interval_ip'               => 'nullable|integer',
-            'interval_install'          => 'nullable|integer',
-            'interval_click'            => 'nullable|integer',
-            'interval_click_ratio'      => 'nullable|numeric',
-            'interval_ip_click_ratio'   => 'nullable|numeric',
-            'interval_conversion_rate'  => 'nullable|numeric',
-        ]);
-
-        AppMetric::updateOrCreate(
-            [
-                'app_id'      => $validated['app_id'],
-                'report_date' => $validated['report_date'],
-                'time_slot'   => $validated['time_slot'],
-            ],
-            $validated
-        );
-
-        return response()->json(['success' => true]);
-    }
-
     public function export(Request $request)
     {
         $date     = $request->get('date', Carbon::today()->toDateString());
@@ -160,4 +116,5 @@ class ReportController extends Controller
 
         return Excel::download(new ReportExport($date), $filename);
     }
+
 }

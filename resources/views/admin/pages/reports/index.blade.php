@@ -74,8 +74,9 @@
             <h5 class="mb-0">Date:</h5>
             <input type="date" id="report-date" class="form-control date-picker"
                 value="{{ $date }}">
-            <button id="btn-load" class="btn btn-primary btn-sm">Load</button>
-            <button id="btn-export" class="btn btn-success btn-sm">⬇ Export Excel</button>
+            <button id="btn-load" class="btn btn-success btn-sm">Load</button>
+            <button id="btn-export" class="btn btn-danger btn-sm">⬇ Export Excel</button>
+            <button id="btn-fetch" class="btn btn-primary btn-sm">⬇ Fetch Today Data</button>
             <span id="last-updated" class="text-muted small"></span>
         </div>
 
@@ -228,9 +229,17 @@
             startAutoRefresh();
         });
 
+
+        // excel export
         document.getElementById('btn-export').addEventListener('click', () => {
             const date = document.getElementById('report-date').value;
             window.location.href = `{{ route('report.export') }}?date=${date}`;
+        });
+
+        // fetch today data
+        document.getElementById('btn-fetch').addEventListener('click', () => {
+            const date = document.getElementById('report-date').value;
+            window.location.href = `{{ route('report.fetch') }}?date=${date}`;
         });
 
         // Load on page open

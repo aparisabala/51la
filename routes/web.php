@@ -35,9 +35,14 @@ Route::middleware('auth')->group(callback: function () {
     // Excel export
     Route::get('/report/export', [ReportController::class, 'export'])->name('report.export');
 
-    // Store / update a metric
-    Route::post('/report/metrics', [ReportController::class, 'store'])->name('report.store');
-    
+    // fetch today data
+    Route::get('/report/fetch', [ReportController::class, 'fetch'])->name('report.fetch');
+
+    // metrics ip entry
+    Route::get('/metrics/manual-ip',  [AppMetricController::class, 'manualIpForm'])->name('metrics.manual-ip.form');
+    Route::post('/metrics/manual-ip', [AppMetricController::class, 'manualIpEntry'])->name('metrics.manual-ip.store');
+    Route::get('/metrics/manual-ip/existing', [AppMetricController::class, 'getExistingIp'])->name('metrics.manual-ip.existing');
+
     //Role and User Section
     Route::resource('roles', RoleController::class);
     Route::resource('users', UserController::class);

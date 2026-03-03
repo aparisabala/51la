@@ -135,6 +135,13 @@
                         <span> App Metrics Report </span>
                     </a>
                 </li>
+
+                <li class="side-nav-item">
+                    <a href="{{route('metrics.manual-ip.form')}}" class="side-nav-link">
+                        <i class="ri-dashboard-3-line"></i>
+                        <span> Manual Entry </span>
+                    </a>
+                </li>
                 {{-- main working area --}}
 
 
