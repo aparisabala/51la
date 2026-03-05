@@ -17,9 +17,21 @@ class ReportController extends Controller
     {
         $date = $request->get('date', Carbon::today()->toDateString());
 
+        $allSlots = AppMetric::where('report_date', $date)
+                                    ->where(function ($q) {
+                                        $q->whereNull('total_install')->orWhere('total_install', 0);
+                                    })
+                                    ->where(function ($q) {
+                                        $q->whereNull('total_click')->orWhere('total_click', 0);
+                                    })
+                                    ->distinct()
+                                    ->orderBy('time_slot')
+                                    ->pluck('time_slot')
+                                    ->toArray();
+     
         $apps = App::where('is_active', true)->orderBy('id')->get();
 
-        return view('admin.pages.reports.index', compact('apps', 'date'));
+        return view('admin.pages.reports.index', compact('apps', 'date', 'allSlots'));
     }
 
     public function data(Request $request)
@@ -28,13 +40,18 @@ class ReportController extends Controller
 
         $apps = App::where('is_active', true)->orderBy('id')->get();
 
-        // All 24 time slots (00:00 - 23:00)
-        $allSlots = [];
-        for ($h = 0; $h < 24; $h++) {
-            $allSlots[] = sprintf('%02d:00', $h);
+        $allSlots = AppMetric::where('report_date', $date)
+            ->distinct()
+            ->orderBy('time_slot')
+            ->pluck('time_slot')
+            ->toArray();
+
+        if (empty($allSlots)) {
+            for ($h = 0; $h < 24; $h++) {
+                $allSlots[] = sprintf('%02d:00', $h);
+            }
         }
 
-        // Fetch all metrics for this date, keyed by [app_id][time_slot]
         $metricsRaw = AppMetric::where('report_date', $date)
             ->get()
             ->groupBy('app_id')
@@ -68,8 +85,6 @@ class ReportController extends Controller
                     'click_ratio'      => $metric->click_ratio ?? '-',
                     'ip_click_ratio'   => $metric->ip_click_ratio ?? '-',
                     'conversion_rate'  => $metric->conversion_rate_display,
-                    // 'ip_click_ratio' => $metric->interval_ip > 0 ? ($metric->interval_click / $metric->interval_ip) : 0,
-                    // 'conversion_rate' => $metric->interval_ip > 0 ? ($metric->interval_install / $metric->interval_ip) : 0,
                 ] : [
                     'ip_51la'         => '-',
                     'total_install'   => '-',
@@ -87,8 +102,6 @@ class ReportController extends Controller
                     'click_ratio'     => $metric->interval_click_ratio ?? '-',
                     'ip_click_ratio'  => $metric->interval_ip_click_ratio ?? '-',
                     'conversion_rate' => $metric->interval_conversion_rate_display,
-                    // 'ip_click_ratio' => $metric->interval_ip > 0 ? ($metric->interval_click / $metric->interval_ip) : 0,
-                    // 'conversion_rate' => $metric->interval_ip > 0 ? ($metric->interval_install / $metric->interval_ip) : 0,
                 ] : [
                     'ip_51la'         => '-',
                     'total_install'   => '-',

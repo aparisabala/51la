@@ -142,6 +142,13 @@
                         <span> Manual Entry </span>
                     </a>
                 </li>
+
+                <li class="side-nav-item">
+                    <a href="{{route('settings.section')}}" class="side-nav-link">
+                        <i class="ri-dashboard-3-line"></i>
+                        <span> Settings </span>
+                    </a>
+                </li>
                 {{-- main working area --}}
 
 

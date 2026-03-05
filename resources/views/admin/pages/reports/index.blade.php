@@ -73,11 +73,25 @@
         <div class="d-flex align-items-center gap-3 mb-3">
             <h5 class="mb-0">Date:</h5>
             <input type="date" id="report-date" class="form-control date-picker"
-                value="{{ $date }}">
+                value="{{ $date }}" >
             <button id="btn-load" class="btn btn-success btn-sm">Load</button>
             <button id="btn-export" class="btn btn-danger btn-sm">⬇ Export Excel</button>
-            <button id="btn-fetch" class="btn btn-primary btn-sm">⬇ Fetch Today Data</button>
             <span id="last-updated" class="text-muted small"></span>
+
+
+            <h5 class="mb-0">
+                Time <span style="font-weight: 100;">(Loading for Current Date Only)</span>: 
+            </h5>
+            <div class="input-group" style="width:auto;">
+                <select id="time_slot" class="form-select" style="width:150px;">
+                    @foreach($allSlots as $slot)
+                    <option value="{{ $slot }}">{{ $slot }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <button id="btn-fetch" class="btn btn-primary btn-sm">⬇ Fetch Data</button>
+
+
         </div>
 
         <div id="loading">
@@ -236,10 +250,11 @@
             window.location.href = `{{ route('report.export') }}?date=${date}`;
         });
 
-        // fetch today data
         document.getElementById('btn-fetch').addEventListener('click', () => {
             const date = document.getElementById('report-date').value;
-            window.location.href = `{{ route('report.fetch') }}?date=${date}`;
+            const time = document.getElementById('time_slot').value;
+            if (!confirm(`Fetch data for ${date} at ${time}? This will insert missing slots only.`)) return;
+            window.location.href = `{{ route('report.fetch') }}?date=${date}&time=${time}`;
         });
 
         // Load on page open

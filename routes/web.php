@@ -3,6 +3,7 @@
 use App\Http\Controllers\admin\AdminDashboardController;
 use App\Http\Controllers\admin\AppController;
 use App\Http\Controllers\admin\AppMetricController;
+use App\Http\Controllers\admin\SettingsController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -36,12 +37,17 @@ Route::middleware('auth')->group(callback: function () {
     Route::get('/report/export', [ReportController::class, 'export'])->name('report.export');
 
     // fetch today data
-    Route::get('/report/fetch', [ReportController::class, 'fetch'])->name('report.fetch');
+    Route::get('/report/fetch', [AppMetricController::class, 'fetch'])->name('report.fetch');
 
     // metrics ip entry
     Route::get('/metrics/manual-ip',  [AppMetricController::class, 'manualIpForm'])->name('metrics.manual-ip.form');
     Route::post('/metrics/manual-ip', [AppMetricController::class, 'manualIpEntry'])->name('metrics.manual-ip.store');
     Route::get('/metrics/manual-ip/existing', [AppMetricController::class, 'getExistingIp'])->name('metrics.manual-ip.existing');
+
+    // settings
+    Route::get('/settings',  [SettingsController::class, 'index'])->name('settings.section');
+    Route::post('/settings-change', [SettingsController::class, 'change'])->name('settings.change');
+
 
     //Role and User Section
     Route::resource('roles', RoleController::class);
