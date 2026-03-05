@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 use App\Exports\ReportExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
@@ -39,7 +40,7 @@ class ReportController extends Controller
         $date = $request->get('date', Carbon::today()->toDateString());
 
         $apps = App::where('is_active', true)->orderBy('id')->get();
-
+        
         $allSlots = AppMetric::where('report_date', $date)
             ->distinct()
             ->orderBy('time_slot')
@@ -47,8 +48,15 @@ class ReportController extends Controller
             ->toArray();
 
         if (empty($allSlots)) {
-            for ($h = 0; $h < 24; $h++) {
-                $allSlots[] = sprintf('%02d:00', $h);
+            $activeSetting = DB::table('settings')->where('is_active', 1)->first();
+            $intervalMinutes = $activeSetting ? (int)$activeSetting->time_difference : 60;
+
+            $startTime = Carbon::parse($date)->startOfDay(); // 00:00
+            $endTime = Carbon::parse($date)->endOfDay();   // 23:59
+
+            while ($startTime->lte($endTime)) {
+                $allSlots[] = $startTime->format('H:i');
+                $startTime->addMinutes($intervalMinutes);
             }
         }
 

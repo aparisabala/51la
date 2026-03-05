@@ -46,6 +46,7 @@
             color: #2c3e50;
         }
 
+
         /* Sticky first column */
         table.dataTable tbody tr td:first-child,
         table.dataTable thead tr th:first-child {
@@ -79,17 +80,40 @@
             <span id="last-updated" class="text-muted small"></span>
 
 
-            <h5 class="mb-0">
-                Time <span style="font-weight: 100;">(Loading for Current Date Only)</span>: 
-            </h5>
-            <div class="input-group" style="width:auto;">
-                <select id="time_slot" class="form-select" style="width:150px;">
-                    @foreach($allSlots as $slot)
-                    <option value="{{ $slot }}">{{ $slot }}</option>
-                    @endforeach
-                </select>
+            {{-- add modal --}}
+
+            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#addNewModalId">⬇ Fetch Data</button>
+
+            <div class="modal fade" id="addNewModalId" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="addNewModalLabel" aria-hidden="true">
+                <div class="modal-dialog  modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="addNewModalLabel">Fetch Today Data</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-8">
+                                    <div class="input-group" style="width:auto;">
+                                        <label for="time_slot" class="form-label">Time (Current Date Wise Manual Entry Time Dropdown)</label>
+                                        <select id="time_slot" class="form-control" style="width:150px;">
+                                            <option>Select Time</option>
+                                            @foreach($allSlots as $slot)
+                                                <option value="{{ $slot }}">{{ $slot }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-4 mt-3">
+                                    <button id="btn-fetch" class="btn btn-primary btn-sm" style="height: 98%;">⬇ Fetch Today Data</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button id="btn-fetch" class="btn btn-primary btn-sm">⬇ Fetch Data</button>
+
+            {{-- add modal --}}
 
 
         </div>
@@ -100,7 +124,7 @@
             </div>
         </div>
 
-        <div id="report-table-wrapper">
+        <div>
             <!-- Table is built dynamically by JS -->
             <table id="report-table" class="table table-bordered table-sm nowrap w-100">
                 <thead id="report-thead"></thead>
@@ -178,9 +202,12 @@
                             return;
                         }
                         const val = d[col.key] ?? '-';
+
                         // Red cell if Conv. Rate < 30%
                         if (col.key === 'conversion_rate') {
-                            const num = parseFloat(String(val).replace('%', ''));
+                            // const num = parseFloat(String(val).replace('%', ''));
+                            const num = parseFloat(String(val).replace(/[%,]/g, ''));
+                            console.log('test data: '+num);
                             if (!isNaN(num) && num < 30) {
                                 tbodyHtml += `<td style="background:#ff4444 !important;color:#fff !important;font-weight:700;">${escHtml(String(val))}</td>`;
                                 return;
