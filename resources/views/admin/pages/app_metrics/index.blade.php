@@ -209,10 +209,18 @@
 
     /** Add one row with a smart-guessed next time, pre-filling IP from DB if it exists */
     async function addNextRow() {
+
+
         const appId = document.getElementById('appSelect').value;
         const date  = document.getElementById('dateInput').value;
         const status = document.getElementById('loadStatus');
 
+        if (!appId || !date) {
+            status.textContent = 'Please select an app and date first.';
+            status.className   = 'text-danger small ms-1';
+            return;
+        }
+        
         // Fetch existing data once if not yet loaded
         if (appId && date && Object.keys(existingMap).length === 0) {
             try {
