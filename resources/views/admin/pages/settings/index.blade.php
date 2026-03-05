@@ -7,11 +7,11 @@
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="javascript: void(0);">CoderNetix</a></li>
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">Settings</a></li>
-                        <li class="breadcrumb-item active">Settings</li>
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Time Settings</a></li>
+                        <li class="breadcrumb-item active">Time Settings</li>
                     </ol>
                 </div>
-                <h4 class="page-title">Settings!</h4>
+                <h4 class="page-title">Time Settings!</h4>
             </div>
         </div>
     </div>

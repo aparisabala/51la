@@ -39,12 +39,12 @@ class AppMetricController extends Controller
                   
                 ];
                 
-               
                 
             } catch (\Exception $e) {
                 \Log::error("API Failed for App {$app->id}: " . $e->getMessage());
                 continue;
             }
+
 
             $prevCumulative = null;
 
@@ -57,18 +57,7 @@ class AppMetricController extends Controller
                 $intInstall = $prevCumulative ? max(0, $install - $prevCumulative[1]) : 0;
                 $intClick   = $prevCumulative ? max(0, $click - $prevCumulative[2]) : 0;
 
-                $existingSlots = AppMetric::where('report_date', $date)->where('time_slot', $time)
-                                    ->where(function ($q) {
-                                        $q->whereNull('total_install')->orWhere('total_install', 0);
-                                    })
-                                    ->where(function ($q) {
-                                        $q->whereNull('total_click')->orWhere('total_click', 0);
-                                    })
-                                    ->distinct()
-                                    ->orderBy('time_slot')
-                                    ->pluck('time_slot')
-                                    ->toArray();
-                if (!$existingSlots) {
+                
 
                     AppMetric::where('app_id', $app->id)
                             ->where('report_date', $date)
@@ -87,8 +76,7 @@ class AppMetricController extends Controller
                                 'interval_ip_click_ratio'  => $intIp > 0 ? round($intClick / $intIp, 2) : 0,
                                 'interval_conversion_rate' => $intIp > 0 ? ($intInstall / $intIp) : 0,
                             ]);
-                }
-
+               
                 $prevCumulative = [$ip, $install, $click];
             }
         }
