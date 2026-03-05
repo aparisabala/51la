@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('apps', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('api_end_point')->nullable();
             $table->string('slug')->unique();
             $table->boolean('is_active')->default(true);
             $table->timestamps();

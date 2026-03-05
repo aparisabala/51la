@@ -72,7 +72,14 @@
                                                                    class="form-control" placeholder="Enter Name" required>
                                                         </div>
                                                     </div>
-                                                    
+
+                                                    <div class="col-12">
+                                                        <div class="mb-3">
+                                                            <label for="api_end_point" class="form-label">API End Point</label>
+                                                            <input type="text" id="api_end_point" name="api_end_point" value="{{$app->api_end_point}}"
+                                                                   class="form-control" placeholder="Enter Api End Point">
+                                                        </div>
+                                                    </div>
 
                                                     <div class="col-12">
                                                         <div class="mb-3">
@@ -139,6 +146,15 @@
                                            class="form-control" placeholder="Enter Name">
                                 </div>
                             </div>
+
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="api_end_point" class="form-label">API End Point</label>
+                                    <input type="text" id="api_end_point" name="api_end_point"
+                                           class="form-control" placeholder="Enter API End Point">
+                                </div>
+                            </div>
+
                             <div class="col-12">
                                 <div class="mb-3">
                                     <label for="is_active" class="form-label">Status</label>

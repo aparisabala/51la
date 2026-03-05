@@ -20,6 +20,7 @@ class AppController extends Controller
         App::create([
             'name'      => $request->name,
             'slug'      => Str::slug($request->name),
+            'api_end_point' => $request->api_end_point,
             'is_active' => (int)$request->is_active,
         ]);
 
@@ -33,6 +34,7 @@ class AppController extends Controller
         $app->update([
             'name'      => $request->name,
             'slug'      => \Illuminate\Support\Str::slug($request->name),
+            'api_end_point' => $request->api_end_point,
             'is_active' => $request->is_active,
         ]);
 
