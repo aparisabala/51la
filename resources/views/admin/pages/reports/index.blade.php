@@ -82,31 +82,39 @@
 
             {{-- add modal --}}
 
-            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#addNewModalId">⬇ Fetch Data</button>
+            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#addNewModalId">⬇ Insert Data</button>
 
             <div class="modal fade" id="addNewModalId" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="addNewModalLabel" aria-hidden="true">
                 <div class="modal-dialog  modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title" id="addNewModalLabel">Fetch Today Data</h4>
+                            <h4 class="modal-title" id="addNewModalLabel">Insert App Wise Current Data for Time Slot <span class="text text-success">{{ $time_slot }}</span></h4>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <div class="row">
-                                <div class="col-8">
-                                    <div class="input-group" style="width:auto;">
-                                        <label for="time_slot" class="form-label">Time (Current Date Wise Manual Entry Time Dropdown)</label>
-                                        <select id="time_slot" class="form-control" style="width:150px;">
-                                            <option>Select Time</option>
-                                            @foreach($allSlots as $slot)
-                                                <option value="{{ $slot }}">{{ $slot }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">App</label>
+                                    <select id="app_id" class="form-select">
+                                        <option value="">— Select App —</option>
+                                        @foreach($apps as $app)
+                                            <option value="{{ $app->id }}">{{ $app->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                                <div class="col-4 mt-3">
-                                    <button id="btn-fetch" class="btn btn-primary btn-sm" style="height: 98%;">⬇ Fetch Today Data</button>
+
+                                <div class="col-12 mt-2">
+                                    <label class="form-label fw-semibold">51la IP</label>
+                                    <input type="text" name="ip" class="form-control form-control-sm" id="ip" placeholder="Type the IP here" required>
                                 </div>
+
+                                <input type="hidden" class="form-control form-control-sm" id="time" value="{{ $time_slot }}" readonly>
+
+                                <div class="col-12 mt-3" style="text-align: end;">
+                                    <button id="btn-insert" class="btn btn-primary btn-sm">⬇ Insert</button>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -277,11 +285,17 @@
             window.location.href = `{{ route('report.export') }}?date=${date}`;
         });
 
-        document.getElementById('btn-fetch').addEventListener('click', () => {
+        document.getElementById('btn-insert').addEventListener('click', () => {
             const date = document.getElementById('report-date').value;
-            const time = document.getElementById('time_slot').value;
-            if (!confirm(`Fetch data for ${date} at ${time}? This will insert missing slots only.`)) return;
-            window.location.href = `{{ route('report.fetch') }}?date=${date}&time=${time}`;
+            const ip = document.getElementById('ip').value;
+            const time = document.getElementById('time').value;
+
+            const appSelect = document.getElementById('app_id');
+            const app_id = appSelect.value;
+            const app_name = appSelect.options[appSelect.selectedIndex].text;
+
+            if (!confirm(`Insert data for ${app_name} of date: ${date} and IP: ${ip}?`)) return;
+            window.location.href = `{{ route('report.store') }}?date=${date}&time=${time}&ip=${ip}&app_id=${app_id}`;
         });
 
         // Load on page open
