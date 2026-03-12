@@ -16,6 +16,8 @@ class ReportExport implements FromArray, WithEvents, WithTitle
 {
     protected string $date;
     protected $apps;
+    protected array $slots = [];
+
     protected array $convRateCells = [];
 
     const COLOR_HEADER_DARK = 'FF2C3E50';
@@ -28,8 +30,7 @@ class ReportExport implements FromArray, WithEvents, WithTitle
     const COLOR_RED_BG      = 'FFFF4444';
     const COLOR_RED_TEXT    = 'FFFFFFFF';
 
-    // Time is first in every app section
-    const SUB_COLS = ['Time', '51la IP', 'Install', 'Click', 'Click Ratio', 'IP Click Ratio', 'Conv. Rate'];
+    const SUB_COLS = ['时间', '51la IP', '总安装', '总点击', '点击比', 'IP点击比', '转化率'];
     const CONV_RATE_IDX = 6; // 0-based index of Conv. Rate inside SUB_COLS
     const TIME_IDX      = 0; // 0-based index of Time inside SUB_COLS
 
@@ -46,10 +47,22 @@ class ReportExport implements FromArray, WithEvents, WithTitle
 
     public function array(): array
     {
-        $allSlots = [];
-        for ($h = 0; $h < 24; $h++) {
-            $allSlots[] = sprintf('%02d:00', $h);
+
+        $allSlots = AppMetric::where('report_date', $this->date)
+            ->distinct()
+            ->orderBy('time_slot')
+            ->pluck('time_slot')
+            ->toArray();
+
+
+        if (empty($allSlots)) {
+            $allSlots = [];
+            for ($h = 0; $h < 24; $h++) {
+                $allSlots[] = sprintf('%02d:00', $h);
+            }
         }
+
+        $this->slots = $allSlots; // store for registerEvents
 
         $metricsRaw = AppMetric::where('report_date', $this->date)
             ->get()
@@ -92,7 +105,8 @@ class ReportExport implements FromArray, WithEvents, WithTitle
                     $cumRow[] = $m->total_click;
                     $cumRow[] = $m->click_ratio ?? '-';
                     $cumRow[] = $m->ip_click_ratio ?? '-';
-                    $cumConv  = $m->conversion_rate !== null ? (float)($m->conversion_rate * 100) : null;
+                    // conversion_rate stored as fraction; we want percent in output
+                $cumConv  = $m->conversion_rate !== null ? (float)($m->conversion_rate * 100) : null;
                     $cumRow[] = $cumConv !== null ? number_format($cumConv, 2) . '%' : '-';
                     $this->convRateCells[] = ['row' => $excelRow, 'col' => $convCol, 'value' => $cumConv];
 
@@ -132,7 +146,9 @@ class ReportExport implements FromArray, WithEvents, WithTitle
                 $appCount  = $this->apps->count();
                 $subCount  = count(self::SUB_COLS);
                 $totalCols = $appCount * $subCount;
-                $totalRows = 2 + (24 * 2);
+                // rows = header(2) + two rows per slot
+                $slotCount = count($this->slots);
+                $totalRows = 2 + ($slotCount * 2);
 
                 $col = fn(int $n) => \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($n);
 
@@ -158,7 +174,7 @@ class ReportExport implements FromArray, WithEvents, WithTitle
                 ]);
 
                 // ── Data rows ────────────────────────────────
-                for ($i = 0; $i < 24; $i++) {
+                for ($i = 0; $i < $slotCount; $i++) {
                     $wRow = 3 + ($i * 2);
                     $oRow = $wRow + 1;
 

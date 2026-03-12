@@ -134,7 +134,7 @@ class ReportController extends Controller
     {
         $date = $request->get('date', Carbon::today()->toDateString());
         $app_id = $request->get('app_id');
-        $time = Carbon::parse($request->get('time'))->format('H:i:s');
+        $time = Carbon::parse($request->get('time'))->format('H:i');
 
         $app = App::find($app_id);
 
